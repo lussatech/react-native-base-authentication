@@ -5,10 +5,11 @@ import React, {
   View,
   Text,
   AsyncStorage,
-  ToastAndroid
+  ToastAndroid,
+  ScrollView
 } from 'react-native';
 
-import ToolbarAndroid from 'ToolbarAndroid';
+import Navbar from './Navbar';
 import style from './Style';
 import {key} from './Server';
 
@@ -17,7 +18,7 @@ export default class extends Component {
     super(props);
 
     this.state = {
-      session: {}
+      session: this.props.session
     };
   }
 
@@ -43,42 +44,20 @@ export default class extends Component {
 
   render() {
     return (
-      <View style={style.container}>
-        <ToolbarAndroid
-          style={style.toolbar}
-          title={this.props.title}
-          actions={[{title: 'Logout', show: 'always'}]}
-          onActionSelected={this.onActionSelected.bind(this)} />
-
-        <Text style={style.welcome}>
-          Welcome to Restricted Page!
-        </Text>
-        <Text style={style.instructions}>
-          If you can see this page,
-        </Text>
-        <Text style={style.instructions}>
-          Its means that you already logged in.
-        </Text>
-      </View>
+      <ScrollView>
+        <Navbar title={'Restricted Page'} navigator={this.props.navigator} />
+        <View>
+          <Text style={style.welcome}>
+            Welcome to Restricted Page!
+          </Text>
+          <Text style={style.instructions}>
+            If you can see this page,
+          </Text>
+          <Text style={style.instructions}>
+            Its means that you already logged in.
+          </Text>
+        </View>
+      </ScrollView>
     );
-  }
-
-  onActionSelected(position) {
-    switch (position) {
-      default:
-        this.onLogout();
-    }
-  }
-
-  async onLogout() {
-    try {
-      await AsyncStorage.removeItem(key);
-      ToastAndroid.show('Logout successfully!', ToastAndroid.SHORT);
-      this.props.navigator.replace({
-        name: 'login'
-      });
-    } catch (error) {
-      ToastAndroid.show(String(error).replace('Error: ',''), ToastAndroid.SHORT);
-    }
   }
 }

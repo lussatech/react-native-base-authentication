@@ -36,6 +36,6 @@ export default StyleSheet.create({
   },
   toolbar: {
     height: 60,
-    backgroundColor: '#EC7E48'
+    backgroundColor: '#D6D2D2'
   }
 });

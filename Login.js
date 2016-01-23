@@ -23,7 +23,8 @@ export default class extends Component {
            email: undefined,
         password: undefined,
             role: 0
-      }
+      },
+      loading: false
     };
   }
 
@@ -38,7 +39,7 @@ export default class extends Component {
           <TextInput ref={'password'} placeholder={'Password'} keyboardType={'default'} secureTextEntry={true} onFocus={this.onFocus.bind(this, 'password')} onChangeText={(text) => this.state.data.password = text} value={this.state.data.password} />
         </View>
         <TouchableHighlight style={style.button} onPress={this.onSubmit.bind(this)}>
-          <Text style={style.buttonText}>{'Submit'}</Text>
+          <Text style={style.buttonText}>{this.state.loading ? 'Please Wait . . .' : 'Submit'}</Text>
         </TouchableHighlight>
       </ScrollView>
     );
@@ -54,6 +55,15 @@ export default class extends Component {
   }
 
   onSubmit() {
+    if (this.state.loading) {
+      ToastAndroid.show('Please Wait . . .', ToastAndroid.SHORT);
+      return;
+    }
+
+    this.setState({
+      loading: true
+    });
+
     api.auth.login(this.state.data)
       .then((response) => {
         if (!response.ok) throw Error(response.statusText || response._bodyText);

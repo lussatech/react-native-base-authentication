@@ -1,11 +1,19 @@
 {
   "name": "react-native-base-authentication",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC"
+  "author": "Lussa Teknologi",
+  "license": "ISC",
+  "description": "an authentication, policy and session management template for react native to connect with your server API",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lussatech/react-native-base-authentication.git"
+  },
+  "bugs": {
+    "url": "https://github.com/lussatech/react-native-base-authentication/issues"
+  },
+  "homepage": "https://github.com/lussatech/react-native-base-authentication"
 }

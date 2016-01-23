@@ -1,6 +1,6 @@
 'use strict';
 
-export const  key = '@BaseAuthentication:user';
+export const  key = '@lussatech:session';
 export const host = 'http://aprs.lussa.net';
 export default {
   auth: {
