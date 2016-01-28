@@ -4,7 +4,7 @@ var     fs = require('fs')
   ,   path = require('path')
   , source = path.resolve('node_modules', 'react-native-base-authentication')
   , target = path.resolve(process.cwd(), 'lib')
-  , ignore = ['cli.js', 'index.js', 'package.json'];
+  , ignore = ['cli.js', 'index.js', 'package.json', 'readme.md'];
 
 function run() {
   try {

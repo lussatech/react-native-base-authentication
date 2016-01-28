@@ -1,7 +1,6 @@
 ## Requirements:
 
     lussatech-cli
-    react-native-cli
 
 -----
 ## Content:
@@ -16,7 +15,7 @@
 <a name="step1"></a>
 ### Step 1: Get the code
 
-    npm install react-native-base-authentication --save
+    npm install react-native-base-authentication
 
 -----
 <a name="step2"></a>
@@ -45,7 +44,7 @@
     #index.android.js
 
     ...
-    import Login from './lib/react-native-base-authentication';
+    import Example from './lib/react-native-base-authentication/Example';
     ...
 
     class Name extends React.Component {
@@ -53,7 +52,7 @@
       render() {
         return (
           ...
-          <Login />
+          <Example />
           ...
         );
       }
