@@ -16,28 +16,12 @@ import React, {
   BackAndroid
 } from 'react-native';
 
-import BaseNavbar from './Navbar';
-import BaseLogin from './Login';
-import BaseRegister from './Register';
-import BaseForgetPassword from './ForgetPassword';
-import BaseResetPassword from './ResetPassword';
-import BaseRestrictedPage from './RestrictedPage';
-
-const icons = {
-  back: require('./ic_menu_back.png'),
-  logo: require('./ic_menu_logo.png'),
-  menu: require('./ic_menu_option.png'),
-};
-
-const actions = [
-  {title: 'Register', route: 'register'},
-  {title: 'Login', route: 'login'},
-  {title: 'Forget Password', route: 'forget'},
-  {title: 'Reset Password', route: 'reset'},
-  {title: 'Restricted Page', route: 'restricted'},
-  {title: 'Profile'},
-  {title: 'Logout'},
-];
+import BaseNavbar from '../Navbar';
+import BaseLogin from '../Login';
+import BaseRegister from '../Register';
+import BaseForgetPassword from '../ForgetPassword';
+import BaseResetPassword from '../ResetPassword';
+import BaseRestrictedPage from '../RestrictedPage';
 
 const styles = StyleSheet.create({
   container: {
@@ -111,13 +95,6 @@ class Home extends Component {
         </View>
       </ScrollView>
     );
-  }
-
-  onActionSelected(position) {
-    if (actions[position].route) {
-      return this.gotoRoute(actions[position].route);
-    }
-    return ToastAndroid.show(actions[position].title, ToastAndroid.SHORT);
   }
 
   gotoRoute(name) {

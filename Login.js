@@ -12,7 +12,10 @@ import React, {
 } from 'react-native';
 
 import style from './Style';
-import api, {host, key} from './Server';
+import api, {
+  host,
+  key
+} from './Server';
 
 export default class extends Component {
   constructor(props) {
@@ -83,8 +86,7 @@ export default class extends Component {
   async onSuccess(data) {
     try {
       await AsyncStorage.setItem(key, JSON.stringify(data));
-      ToastAndroid.show('Logged in successfully!', ToastAndroid.SHORT);
-      this.props.navigator.pop();
+      ToastAndroid.show(JSON.stringify(data), ToastAndroid.LONG);
     } catch (error) {
       ToastAndroid.show(String(error).replace('Error: ',''), ToastAndroid.SHORT);
     }

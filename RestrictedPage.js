@@ -9,6 +9,7 @@ import React, {
   ScrollView
 } from 'react-native';
 
+import Login from './Login';
 import Navbar from './Navbar';
 import style from './Style';
 import {key} from './Server';
@@ -18,7 +19,8 @@ export default class extends Component {
     super(props);
 
     this.state = {
-      session: this.props.session
+      session: undefined,
+      loading: true
     };
   }
 
@@ -31,11 +33,9 @@ export default class extends Component {
       let value = await AsyncStorage.getItem(key);
 
       if (value !== null) {
-        this.setState({session: JSON.parse(value)});
+        this.setState({loading: false, session: JSON.parse(value)});
       } else {
-        this.props.navigator.replace({
-          name: 'login'
-        });
+        this.setState({loading: false});
       }
     } catch (error) {
       ToastAndroid.show(String(error).replace('Error: ',''), ToastAndroid.SHORT);
@@ -43,6 +43,13 @@ export default class extends Component {
   }
 
   render() {
+    if (this.state.loading) return this.renderLoading();
+    if (!this.state.session) return this.renderLogin();
+
+    return this.renderScene();
+  }
+
+  renderScene() {
     return (
       <ScrollView>
         <Navbar title={'Restricted Page'} navigator={this.props.navigator} />
@@ -58,6 +65,20 @@ export default class extends Component {
           </Text>
         </View>
       </ScrollView>
+    );
+  }
+
+  renderLogin() {
+    return <Login />;
+  }
+
+  renderLoading() {
+    return (
+      <View>
+        <Text style={style.instructions}>
+          please wait . . .
+        </Text>
+      </View>
     );
   }
 }

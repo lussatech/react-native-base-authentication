@@ -33,33 +33,14 @@ export default class extends Component {
 
     this.state = {
       navigator: this.props.navigator,
-          icons: this.props.icons || icons,
-        actions: this.props.actions || actions,
+          icons: icons,
+        actions: actions,
           title: this.props.title,
         session: this.props.session
     };
   }
 
-  render() {
-    this.renderMenu();
-
-    return (
-      <View style={style.container}>
-        <ToolbarAndroid
-          style={style.toolbar}
-          navIcon={(this.state.navigator && this.state.navigator.getCurrentRoutes().length > 1) ? this.state.icons.back : undefined}
-          onIconClicked={this.goBack.bind(this)}
-          logo={this.state.icons.logo}
-          title={this.state.title}
-          overFlowIcon={this.state.icons.menu}
-          actions={this.state.actions}
-          onActionSelected={this.onActionSelected.bind(this)}
-        />
-      </View>
-    );
-  }
-
-  renderMenu() {
+  componentWillMount() {
     let temp = [];
 
     this.state.actions.map((val, key) => {
@@ -82,6 +63,23 @@ export default class extends Component {
         })
         .done();
     }
+  }
+
+  render() {
+    return (
+      <View style={style.container}>
+        <ToolbarAndroid
+          style={style.toolbar}
+          navIcon={(this.state.navigator && this.state.navigator.getCurrentRoutes().length > 1) ? this.state.icons.back : undefined}
+          onIconClicked={this.goBack.bind(this)}
+          logo={this.state.icons.logo}
+          title={this.state.title}
+          overFlowIcon={this.state.icons.menu}
+          actions={this.state.actions}
+          onActionSelected={this.onActionSelected.bind(this)}
+        />
+      </View>
+    );
   }
 
   onActionSelected(position) {
@@ -110,9 +108,6 @@ export default class extends Component {
     try {
       await AsyncStorage.removeItem(key);
       ToastAndroid.show('Logout successfully!', ToastAndroid.SHORT);
-      this.props.navigator.replace({
-        name: 'login'
-      });
     } catch (error) {
       ToastAndroid.show(String(error).replace('Error: ',''), ToastAndroid.SHORT);
     }
