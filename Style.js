@@ -9,7 +9,14 @@ export default StyleSheet.create({
     padding: 8
   },
   button: {
-    backgroundColor: '#EC7E48',
+    backgroundColor: '#26a69a',
+    padding: 15,
+    marginTop: 20,
+    justifyContent: 'center',
+    alignSelf: 'stretch'
+  },
+  buttonDisabled: {
+    backgroundColor: '#2bbbad',
     padding: 15,
     marginTop: 20,
     justifyContent: 'center',
@@ -37,5 +44,9 @@ export default StyleSheet.create({
   toolbar: {
     height: 60,
     backgroundColor: '#D6D2D2'
+  },
+  message: {
+    color: 'red',
+    marginLeft: 5
   }
 });

@@ -11,7 +11,7 @@ import React, {
 
 import Login from './Login';
 import Navbar from './Navbar';
-import style from './Style';
+import styles from './Style';
 import {key} from './Server';
 
 export default class extends Component {
@@ -32,13 +32,11 @@ export default class extends Component {
     try {
       let value = await AsyncStorage.getItem(key);
 
-      if (value !== null) {
-        this.setState({loading: false, session: JSON.parse(value)});
-      } else {
-        this.setState({loading: false});
-      }
+      if (value !== null) this.setState({session: JSON.parse(value)});
     } catch (error) {
-      ToastAndroid.show(String(error).replace('Error: ',''), ToastAndroid.SHORT);
+      ToastAndroid.show(String(error).replace('Error: ',''), ToastAndroid.LONG);
+    } finally {
+      this.setState({loading: false});
     }
   }
 
@@ -54,13 +52,13 @@ export default class extends Component {
       <ScrollView>
         <Navbar title={'Restricted Page'} navigator={this.props.navigator} />
         <View>
-          <Text style={style.welcome}>
+          <Text style={styles.welcome}>
             Welcome to Restricted Page!
           </Text>
-          <Text style={style.instructions}>
+          <Text style={styles.instructions}>
             If you can see this page,
           </Text>
-          <Text style={style.instructions}>
+          <Text style={styles.instructions}>
             Its means that you already logged in.
           </Text>
         </View>
@@ -75,7 +73,7 @@ export default class extends Component {
   renderLoading() {
     return (
       <View>
-        <Text style={style.instructions}>
+        <Text style={styles.instructions}>
           please wait . . .
         </Text>
       </View>

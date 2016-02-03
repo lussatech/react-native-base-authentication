@@ -9,23 +9,7 @@ import React, {
 
 import ToolbarAndroid from 'ToolbarAndroid';
 import {key} from './Server';
-import style from './Style';
-
-const icons = {
-  back: require('./ic_menu_back.png'),
-  logo: require('./ic_menu_logo.png'),
-  menu: require('./ic_menu_option.png'),
-};
-
-const actions = [
-  {title: 'Register', route: 'register'},
-  {title: 'Login', route: 'login'},
-  {title: 'Forget Password', route: 'forget'},
-  {title: 'Reset Password', route: 'reset'},
-  {title: 'Restricted Page', route: 'restricted'},
-  {title: 'Profile', auth: true},
-  {title: 'Logout', auth: true},
-];
+import styles from './Style';
 
 export default class extends Component {
   constructor(props) {
@@ -67,9 +51,9 @@ export default class extends Component {
 
   render() {
     return (
-      <View style={style.container}>
+      <View style={styles.container}>
         <ToolbarAndroid
-          style={style.toolbar}
+          style={styles.toolbar}
           navIcon={(this.state.navigator && this.state.navigator.getCurrentRoutes().length > 1) ? this.state.icons.back : undefined}
           onIconClicked={this.goBack.bind(this)}
           logo={this.state.icons.logo}
@@ -113,3 +97,19 @@ export default class extends Component {
     }
   }
 }
+
+const icons = {
+  back: require('./ic_menu_back.png'),
+  logo: require('./ic_menu_logo.png'),
+  menu: require('./ic_menu_option.png'),
+};
+
+const actions = [
+  {title: 'Register', route: 'register'},
+  {title: 'Login', route: 'login'},
+  {title: 'Forget Password', route: 'forget'},
+  {title: 'Reset Password', route: 'reset'},
+  {title: 'Restricted Page', route: 'restricted'},
+  {title: 'Profile', auth: true},
+  {title: 'Logout', auth: true},
+];
