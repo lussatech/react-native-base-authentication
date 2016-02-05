@@ -1,52 +1,68 @@
-## Requirements:
+### Installation
+    npm i react-native-base-authentication
 
-    lussatech-cli
+### Generate Files
+Before generate library files to your react-native-project, make sure that `lussatech-cli` is installed globally in your machine, otherwise use this command to install it:
 
------
-## Content:
-* [Step 1: Get the code](#step1)
-* [Step 2: Generate files](#step2)
-* [Step 3: Customize files](#step3)
+    npm i lussatech-cli -g
 
------
-<a name="step1"></a>
-### Step 1: Get the code
-
-    npm install react-native-base-authentication
-
------
-<a name="step2"></a>
-### Step 2: Generate files
+If `lussatech-cli` have been installed, change directory to your react-native-project and run this command:
 
     lussatech generate react-native-base-authentication
 
------
-<a name="step3"></a>
-### Step 3: Customize files
+then the library files will be added automatically inside your react-native-project, e.g.
 
     react-native-project
-    ...
+    |_ ...
     |_ lib
       |_ react-native-base-authentication
-        |_ Example
         |_ ...
-        |_ Register.js
+        |_ index.js
         |_ ...
-        |_ Server.js
-    ...
 
-#### Setting up your API end-point at `Server.js`, e.g.
+### Usage
+```javascript
+...
+import BaseAuth, {      // sample app
+/* available components */
+  Navbar,               // sample navigation bar
+  Login,                // sample login view
+  Register,             // sample register view
+  ForgetPassword,       // sample forget password view
+  ResetPassword,        // sample reset password view
+  RestrictedPage,       // sample restricted view
+/* available constants  */  
+  Server,               // sample api end-point
+  Host,                 // sample host for api end-point
+  Key,                  // sample key for asynstorage
+  Style                 // sample styles
+} from './lib/react-native-base-authentication';
+
+class Name extends Component {
+  render() {
+    return (
+      <BaseAuth />      // sample calling component
+    );
+  }
+}
+...
+```
+
+###### Manage API end-point
+To manage api end-point, update `Server.js` based on your api end-point, e.g.
+
 ```javascript
 # lib/react-native-base-authentication/Server.js
 
-export const  key = '@lussatech:session';       // key for asynstorage
-export const host = 'http://example.com';
+...
+export const  key = '@lussatech:session'; // key for asynstorage
+export const host = 'http://example.com'; // host for api end-point
 export default {
   auth: {
     login: function (data) {
-      let url = host + '/auth/login',           // API URI for login
-          opt = {
-            method: 'post',
+      let url = `${host}/auth/login`,     // api url for login
+          opt = {                         // optional second argument
+            method: 'post',               //  to customize the HTTP request
             headers: {
               'Accept': 'application/json',
               'Content-Type': 'application/json'
@@ -60,122 +76,23 @@ export default {
   },
   ...
 };
-```
-
-#### Customize your `Login`, `Register`, `ForgetPassword` and `ResetPassword` authentication form, e.g.
-```javascript
-# lib/react-native-base-authentication/Login.js
-
-...
-import api, {host,key} from './Server';
-
-export default class extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      data: {
-        email: undefined,
-        ...
-      },
-      ...
-    };
-  }
-
-  render() {
-    return(
-      <ScrollView ref={'loginForm'}>
-        <Text style={style.title}>LOGIN</Text>
-        <View key={'email'}>
-          <TextInput
-            ref={'email'}
-            placeholder={'Email'}
-            ...
-            onChangeText={(text) => this.state.data.email = text}
-            value={this.state.data.email} />
-        </View>
-        ...
-        <TouchableHighlight style={style.button} onPress={this.onSubmit.bind(this)}>
-          <Text style={style.buttonText}>{this.state.loading ? 'Please Wait . . .' : 'Submit'}</Text>
-        </TouchableHighlight>
-      </ScrollView>
-    );
-  }
-
-  onSubmit() {
-    ...
-    api.auth.login(this.state.data)                           // call API URI for login
-      .then((response) => {
-        ...
-      })
-      .then((responseData) => {
-        this.onSuccess(responseData);
-      })
-      .catch((error) => {
-        ...
-      })
-      .done();
-  }
-
-  async onSuccess(data) {
-    try {
-      await AsyncStorage.setItem(key, JSON.stringify(data));  // save response data on asynstorage as session
-      ...
-    } catch (error) {
-      ...
-    }
-  }
-}
 ...
 ```
 
-#### Manage restricted page, e.g.
-```javascript
-# lib/react-native-base-authentication/RestrictedPage.js
+###### Customize navigation bar
+To customize navigation bar, update `Navbar.js` based on your need, e.g.
 
-...
-export default class extends Component {
-  ...
-  componentWillMount() {
-    this.loadSession().done();
-  }
-
-  async loadSession() {
-    try {
-      let value = await AsyncStorage.getItem(key);       // check session at asynstorage
-
-      if (value !== null) {
-        this.setState({loading: false, session: JSON.parse(value)});
-      } else {
-        this.setState({loading: false});
-      }
-    } catch (error) {
-      ...
-    }
-  }
-
-  render() {
-    if (this.state.loading) return this.renderLoading();
-    if (!this.state.session) return this.renderLogin();  // if no session at asynstorage, render login page
-
-    return this.renderScene();
-  }
-  ...
-}
-...
-```
-
-#### Manage restricted menu, e.g.
 ```javascript
 # lib/react-native-base-authentication/Navbar.js
 
 ...
-const actions = [
-  ...
-  {title: 'Logout', auth: true},         // add props auth at actions menu
-];
-
 export default class extends Component {
+  /* to validate props value */
+  static propTypes = {
+    onLogout: PropTypes.func,
+    ...
+  };
+
   constructor(props) {
     super(props);
 
@@ -189,19 +106,14 @@ export default class extends Component {
     let temp = [];
 
     this.state.actions.map((val, key) => {
-      if (!val.auth) {
-        temp.push(val);
-      }
+      if (!val.auth) temp.push(val);
     });
 
     if (this.state.actions.length > temp.length) {
-      AsyncStorage.getItem(key)                   // check session at asynstorage
+      AsyncStorage.getItem(Key)                          // check session at asynstorage
         .then((value) => {
-          if (value !== null) {
-            this.state.session = value;
-          } else {
-            this.state.actions = temp;
-          }
+          if (value !== null) this.state.session = value;
+          else this.state.actions = temp;                // if no session, hide auth menu
         })
         .catch((error) => {
           ...
@@ -210,46 +122,166 @@ export default class extends Component {
     }
   }
 
+  /* when a menu is selected */
+  onActionSelected(position) {
+    switch (position) {
+       ...
+       case 5: this.onLogout(); break;
+      default: ToastAndroid.show(`${actions[position].title} selected.`, ToastAndroid.SHORT);
+    }
+  }
+  ...
+
+  /* when selected menu is `Logout` */
+  onLogout() {
+    /* calling onLogout props action if available */
+    this.props.onLogout && this.props.onLogout();
+  }
+  ...
+}
+
+/* list of menu */
+const actions = [
+  {title: 'Search', icon: icons.search, show: 'always'},
+  {title: 'Refresh', icon: icons.refresh, show: 'ifRoom'},
+  ...
+  /* only authenticated user can see this menu */
+  {title: 'Profile', auth: true},
+  {title: 'Logout', auth: true},
+];
+...
+```
+
+then include the navigation bar inside your react-native-project, e.g.
+
+```javascript
+# lib/react-native-base-authentication/RestrictedPage.js
+
+  ...
   render() {
     return (
-      <View style={style.container}>
-        <ToolbarAndroid
+      <ScrollView>
+        <Navbar title={'Restricted Page'} onLogout={() => this.onLogout().done())} />
+        <View>
           ...
-          actions={this.state.actions}
-        />
-      </View>
+        </View>
+      </ScrollView>
     );
   }
-}
-...
+
+  async onLogout() {
+    ...
+  }
+  ...
 ```
 
-#### Import `Login.js`, `Register.js`, `ForgetPassword.js`, `ResetPassword.js` and `RestrictedPage.js` to your _react-native-project_, e.g.
+#### Customize views
+To customize views, update `ForgetPassword.js`, `Login.js`, `Register.js`, `ResetPassword.js` and `RestrictedPage.js` based on your need, e.g.
+
 ```javascript
-# index.android.js
+# lib/react-native-base-authentication/Login.js
 
 ...
-import RestrictedPage from './lib/react-native-base-authentication/RestrictedPage';
+export default class extends Component {
+  constructor(props) {
+    super(props);
 
-class Name extends Component {
+    this.state = {
+      data: {
+           email: undefined,
+        password: undefined,
+        ...
+      },
+      ...
+    };
+  }
+
   render() {
-    return <RestrictedPage />;
+    let fields = [
+      {ref: 'email', placeholder: 'Email', keyboardType: 'email-address', secureTextEntry: false, style: [styles.inputText]},
+      {ref: 'password', placeholder: 'Password', keyboardType: 'default', secureTextEntry: true, style: [styles.inputText]},
+      ...
+    ];
+
+    return(
+      ...
+        <View key={'email'}>
+          <TextInput {...fields[0]} onChangeText={(text) => this.state.data.email = text} />
+        </View>
+        <View key={'password'}>
+          <TextInput {...fields[1]} onChangeText={(text) => this.state.data.password = text} />
+        </View>
+        ...
+        <TouchableHighlight onPress={() => this.onSubmit()}>
+          <Text>{'Submit'}</Text>
+        </TouchableHighlight>
+      ...
+    );
+  }
+
+  onSubmit() {
+    ...
+    api.auth.login(this.state.data)                           // call api url for login
+      .then((response) => {
+        if (!response.ok) throw Error(response.statusText || response._bodyText);
+        return response.json();
+      })
+      .then((responseData) => {
+        this.onSuccess(responseData).done();                  // store session at asynstorage
+      })
+      .catch((error) => {
+        ...
+      })
+      .done(() => {
+        ...
+      });
+  }
+
+  async onSuccess(data) {
+    try {
+      await AsyncStorage.setItem(Key, JSON.stringify(data));  // save response data on asynstorage as session
+      ...
+    } catch (error) {
+      ...
+    }
   }
 }
 ...
 ```
 
-#### Or import `Example` to your _react-native-project_ to see an example, e.g.
 ```javascript
-# index.android.js
+# lib/react-native-base-authentication/RestrictedPage.js
 
 ...
-import Example from './lib/react-native-base-authentication/Example';
-
-class Name extends Component {
-  render() {
-    return <Example />;
+export default class extends Component {
+  ...
+  componentWillMount() {
+    this.loadSession().done();                                // check session at asynstorage
   }
+
+  render() {
+    if (!this.state.session) return this.renderLogin();       // if no session at asynstorage, render login page
+    ...
+  }
+
+  async loadSession() {
+    try {
+      let value = await AsyncStorage.getItem(Key);            
+
+      if (value !== null) this.setState({session: JSON.parse(value)});
+    } catch (error) {
+      ...
+    }
+  }
+
+  async onLogout() {
+    try {
+      await AsyncStorage.removeItem(key);
+    } catch (error) {
+      ...
+    }
+  }
+  ...
 }
 ...
 ```
