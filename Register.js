@@ -4,6 +4,7 @@ import React, {
   Component,
   ScrollView,
   Text,
+  TouchableOpacity,
   TouchableHighlight,
   View,
   TextInput,
@@ -32,33 +33,41 @@ export default class extends Component {
 
   render() {
     let fields = [
-      {ref: 'name', placeholder: 'Full Name', keyboardType: 'default', secureTextEntry: false, message: '* Full Name cannot be blank'},
-      {ref: 'phone', placeholder: 'Phone Number', keyboardType: 'numeric', secureTextEntry: false, message: '* Phone Number cannot be blank'},
-      {ref: 'password', placeholder: 'Password', keyboardType: 'default', secureTextEntry: true, message: '* Password cannot be blank'},
-      {ref: 'passwordd', placeholder: 'Password Confirmation', keyboardType: 'default', secureTextEntry: true, message: '* Password Confirmation cannot be blank'},
+      {ref: 'name', placeholder: 'Full Name', keyboardType: 'default', secureTextEntry: false, message: '* Full Name cannot be blank', style: [styles.inputText]},
+      {ref: 'phone', placeholder: 'Phone Number', keyboardType: 'numeric', secureTextEntry: false, message: '* Phone Number cannot be blank', style: [styles.inputText]},
+      {ref: 'password', placeholder: 'Password', keyboardType: 'default', secureTextEntry: true, message: '* Password cannot be blank', style: [styles.inputText]},
+      {ref: 'passwordd', placeholder: 'Password Confirmation', keyboardType: 'default', secureTextEntry: true, message: '* Password Confirmation cannot be blank', style: [styles.inputText]},
     ];
 
     return(
-      <ScrollView ref={'registerForm'} {...this.props}>
-        <Text style={styles.title}>REGISTER</Text>
-        <View key={'messages'} style={{marginBottom: 10}}>
+      <ScrollView ref={'registerFormC'} {...this.props}>
+        <TouchableOpacity activeOpacity={1} style={styles.titleContainer}>
+          <Text style={styles.title}>REGISTER</Text>
+        </TouchableOpacity>
+        <View key={'messages'}>
           {this.renderMessages()}
         </View>
-        <View key={'name'}>
+        <View key={'name'} style={styles.inputContainer}>
           <TextInput {...fields[0]} onFocus={() => this.onFocus({...fields[0]})} onChangeText={(text) => this.state.data.name = text} />
         </View>
-        <View key={'phone'}>
+        <View key={'phone'} style={styles.inputContainer}>
           <TextInput {...fields[1]} onFocus={() => this.onFocus({...fields[1]})} onChangeText={(text) => this.state.data.phone = text} />
         </View>
-        <View key={'password'}>
+        <View key={'password'} style={styles.inputContainer}>
           <TextInput {...fields[2]} onFocus={() => this.onFocus({...fields[2]})} onChangeText={(text) => this.state.data.password = text} />
         </View>
-        <View key={'passwordd'}>
+        <View key={'passwordd'} style={styles.inputContainer}>
           <TextInput {...fields[3]} onFocus={() => this.onFocus({...fields[3]})} onChangeText={(text) => this.state.data.passwordd = text} />
         </View>
         <TouchableHighlight style={this.state.loading ? styles.buttonDisabled : styles.button} underlayColor={'#2bbbad'} onPress={() => this.onSubmit(fields)}>
           <Text style={styles.buttonText}>{this.state.loading ? 'Please Wait . . .' : 'Submit'}</Text>
         </TouchableHighlight>
+        <View style={{flex:1,flexDirection:'row',alignItems:'flex-start',margin:8}}>
+          <Text style={{fontSize:17}}>{'Have an account? '}</Text>
+          <TouchableOpacity activeOpacity={0.7} onPress={() => this.gotoRoute('login')}>
+            <Text style={{fontSize:17,color:'#512DA8'}}>{'Login'}</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     );
   }
@@ -75,7 +84,7 @@ export default class extends Component {
 
   onFocus(argument) {
     setTimeout(() => {
-      let scrollResponder = this.refs.registerForm.getScrollResponder();
+      let scrollResponder = this.refs.registerFormC.getScrollResponder();
           scrollResponder.scrollResponderScrollNativeHandleToKeyboard(
             React.findNodeHandle(this.refs[argument.ref]), 110, true
           );
@@ -100,6 +109,8 @@ export default class extends Component {
 
     if (this.state.messages.length > 0) return null;
 
+    this.gotoRoute('login'); return; // for demo only
+
     this.setState({loading: true});
 
     api.auth.register(this.state.data)
@@ -110,6 +121,7 @@ export default class extends Component {
       .then((responseData) => {
         console.log(responseData);
         ToastAndroid.show(JSON.stringify(responseData), ToastAndroid.LONG);
+        this.replaceRoute('login');
       })
       .catch((error) => {
         console.log(error);
@@ -118,5 +130,23 @@ export default class extends Component {
       .done(() => {
         this.setState({loading: false});
       });
+  }
+
+  goBack() {
+    if (this.props.navigator) {
+      this.props.navigator.pop();
+    }
+  }
+
+  gotoRoute(name) {
+    if (this.props.navigator && this.props.navigator.getCurrentRoutes()[this.props.navigator.getCurrentRoutes().length-1].name != name) {
+      this.props.navigator.push({name: name});
+    }
+  }
+
+  replaceRoute(name) {
+    if (this.props.navigator && this.props.navigator.getCurrentRoutes()[this.props.navigator.getCurrentRoutes().length-1].name != name) {
+      this.props.navigator.replace({name: name});
+    }
   }
 }

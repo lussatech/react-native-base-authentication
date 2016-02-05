@@ -4,6 +4,7 @@ import React, {
   Component,
   ScrollView,
   Text,
+  TouchableOpacity,
   TouchableHighlight,
   View,
   TextInput,
@@ -32,28 +33,30 @@ export default class extends Component {
 
   render() {
     let fields = [
-      {ref: 'phone', placeholder: 'Phone Number', keyboardType: 'numeric', secureTextEntry: false, message: '* Phone number cannot be blank'},
-      {ref: 'resetPassCode', placeholder: 'Reset Code', keyboardType: 'default', secureTextEntry: false, message: '* Reset Code cannot be blank'},
-      {ref: 'password', placeholder: 'Password', keyboardType: 'default', secureTextEntry: true, message: '* Password cannot be blank'},
-      {ref: 'passwordd', placeholder: 'Password Confirmation', keyboardType: 'default', secureTextEntry: true, message: '* Password Confirmation cannot be blank'},
+      {ref: 'phone', placeholder: 'Phone Number', keyboardType: 'numeric', secureTextEntry: false, message: '* Phone number cannot be blank', style: [styles.inputText]},
+      {ref: 'resetPassCode', placeholder: 'Reset Code', keyboardType: 'default', secureTextEntry: false, message: '* Reset Code cannot be blank', style: [styles.inputText]},
+      {ref: 'password', placeholder: 'Password', keyboardType: 'default', secureTextEntry: true, message: '* Password cannot be blank', style: [styles.inputText]},
+      {ref: 'passwordd', placeholder: 'Password Confirmation', keyboardType: 'default', secureTextEntry: true, message: '* Password Confirmation cannot be blank', style: [styles.inputText]},
     ];
 
     return(
       <ScrollView ref={'resetForm'} {...this.props}>
-        <Text style={styles.title}>RESET PASSWORD</Text>
-        <View key={'messages'} style={{marginBottom: 10}}>
+        <TouchableOpacity activeOpacity={1} style={styles.titleContainer}>
+          <Text style={styles.title}>{'RESET PASSWORD'}</Text>
+        </TouchableOpacity>
+        <View key={'messages'}>
           {this.renderMessages()}
         </View>
-        <View key={'phone'}>
+        <View key={'phone'} style={styles.inputContainer}>
           <TextInput {...fields[0]} onFocus={() => this.onFocus({...fields[0]})} onChangeText={(text) => this.state.data.phone = text} />
         </View>
-        <View key={'resetPassCode'}>
+        <View key={'resetPassCode'} style={styles.inputContainer}>
           <TextInput {...fields[1]} onFocus={() => this.onFocus({...fields[1]})} onChangeText={(text) => this.state.data.resetPassCode = text} />
         </View>
-        <View key={'password'}>
+        <View key={'password'} style={styles.inputContainer}>
           <TextInput {...fields[2]} onFocus={() => this.onFocus({...fields[2]})} onChangeText={(text) => this.state.data.password = text} />
         </View>
-        <View key={'passwordd'}>
+        <View key={'passwordd'} style={styles.inputContainer}>
           <TextInput {...fields[3]} onFocus={() => this.onFocus({...fields[3]})} onChangeText={(text) => this.state.data.passwordd = text} />
         </View>
         <TouchableHighlight style={this.state.loading ? styles.buttonDisabled : styles.button} underlayColor={'#2bbbad'} onPress={() => this.onSubmit(fields)}>
@@ -110,6 +113,7 @@ export default class extends Component {
       .then((responseData) => {
         console.log(responseData);
         ToastAndroid.show(JSON.stringify(responseData), ToastAndroid.LONG);
+        this.replaceRoute('login');
       })
       .catch((error) => {
         console.log(error);
@@ -118,5 +122,23 @@ export default class extends Component {
       .done(() => {
         this.setState({loading: false});
       });
+  }
+
+  goBack() {
+    if (this.props.navigator) {
+      this.props.navigator.pop();
+    }
+  }
+
+  gotoRoute(name) {
+    if (this.props.navigator && this.props.navigator.getCurrentRoutes()[this.props.navigator.getCurrentRoutes().length-1].name != name) {
+      this.props.navigator.push({name: name});
+    }
+  }
+
+  replaceRoute(name) {
+    if (this.props.navigator && this.props.navigator.getCurrentRoutes()[this.props.navigator.getCurrentRoutes().length-1].name != name) {
+      this.props.navigator.replace({name: name});
+    }
   }
 }

@@ -5,7 +5,7 @@ export const host = 'http://aprs.lussa.net';
 export default {
   auth: {
     login: function (data) {
-      let url = host + '/auth/login',
+      let url = `${host}/auth/login`,
           opt = {
             method: 'post',
             headers: {
@@ -18,7 +18,7 @@ export default {
       return fetch(url, opt);
     },
     register: function (data) {
-      let url = host + '/auth/register',
+      let url = `${host}/auth/register`,
           opt = {
             method: 'post',
             headers: {
@@ -31,7 +31,7 @@ export default {
       return fetch(url, opt);
     },
     forget: function (data) {
-      let url = host + '/auth/forget',
+      let url = `${host}/auth/forget`,
           opt = {
             method: 'post',
             headers: {
@@ -44,7 +44,7 @@ export default {
       return fetch(url, opt);
     },
     reset: function (data) {
-      let url = host + '/auth/reset',
+      let url = `${host}/auth/reset`,
           opt = {
             method: 'post',
             headers: {

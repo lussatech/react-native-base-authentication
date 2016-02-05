@@ -3,10 +3,17 @@
 import {StyleSheet} from 'react-native';
 
 export default StyleSheet.create({
+  titleContainer: {
+    backgroundColor: '#00BFA5',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+    height: 100
+  },
   title: {
-    alignSelf: 'center',
-    fontSize: 30,
-    padding: 8
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    fontSize: 27
   },
   button: {
     backgroundColor: '#26a69a',
@@ -48,5 +55,13 @@ export default StyleSheet.create({
   message: {
     color: 'red',
     marginLeft: 5
+  },
+  inputContainer: {
+    borderBottomWidth: 1,
+    borderBottomColor: 'transparent'
+  },
+  inputText: {
+    backgroundColor: '#FFFFFF',
+    height: 60
   }
 });

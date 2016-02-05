@@ -2,25 +2,34 @@
 
 import React, {
   Component,
-  View,
+  StyleSheet,
   ToastAndroid,
+  View,
+  Text,
+  TextInput,
+  PropTypes,
   AsyncStorage
 } from 'react-native';
 
 import ToolbarAndroid from 'ToolbarAndroid';
+
 import {key} from './Server';
-import styles from './Style';
 
 export default class extends Component {
+  static propTypes = {
+     onSearch: PropTypes.func,
+    onRefresh: PropTypes.func,
+     onLogout: PropTypes.func
+  };
+
   constructor(props) {
     super(props);
 
     this.state = {
-      navigator: this.props.navigator,
-          icons: icons,
-        actions: actions,
-          title: this.props.title,
-        session: this.props.session
+          search: false,
+           query: undefined,
+         actions: actions,
+         session: undefined
     };
   }
 
@@ -54,62 +63,98 @@ export default class extends Component {
       <View style={styles.container}>
         <ToolbarAndroid
           style={styles.toolbar}
-          navIcon={(this.state.navigator && this.state.navigator.getCurrentRoutes().length > 1) ? this.state.icons.back : undefined}
-          onIconClicked={this.goBack.bind(this)}
-          logo={this.state.icons.logo}
-          title={this.state.title}
-          overFlowIcon={this.state.icons.menu}
-          actions={this.state.actions}
-          onActionSelected={this.onActionSelected.bind(this)}
+          overflowIcon={icons.more}
+          actions={actions}
+          onActionSelected={this.onActionSelected.bind(this)}>
+          {this.state.search ? this.renderSearch() : this.renderTitle()}
+        </ToolbarAndroid>
+      </View>
+    );
+  }
+
+  renderTitle() {
+    return (
+      <View style={styles.titleContainer}>
+        <Text style={styles.title}>{this.props.title}</Text>
+      </View>
+    );
+  }
+
+  renderSearch() {
+    return (
+      <View style={styles.titleContainer}>
+        <TextInput
+          style={{backgroundColor:'#ffffff',padding:2}}
+          ref={'search'}
+          placeholder={'type something . . .'}
+          placeholderTextColor={'#BFBFBF'}
+          autoFocus={true}
+          onChangeText={(text) => this.state.query = text}
+          onSubmitEditing={() => this.onSearch()}
         />
       </View>
     );
   }
 
   onActionSelected(position) {
-    if (this.state.actions[position].route) {
-      return this.gotoRoute(this.state.actions[position].route);
-    }
-    if (this.state.actions[position].title === 'Logout') {
-      return this.onLogout();
-    }
-    return ToastAndroid.show(this.state.actions[position].title, ToastAndroid.SHORT);
-  }
-
-  goBack() {
-    if (this.state.navigator) {
-      this.state.navigator.pop();
+    switch (position) {
+       case 0: this.onSearch(); break;
+       case 1: this.onRefresh(); break;
+       case 5: this.onLogout(); break;
+      default: ToastAndroid.show(`${actions[position].title} selected.`, ToastAndroid.SHORT);
     }
   }
 
-  gotoRoute(name) {
-    if (this.state.navigator && this.state.navigator.getCurrentRoutes()[this.state.navigator.getCurrentRoutes().length-1].name != name) {
-      this.state.navigator.push({name: name});
-    }
+  onSearch() {
+    this.props.onSearch && this.props.onSearch();
+
+    if (this.state.query) ToastAndroid.show(`${this.state.query} not found`, ToastAndroid.SHORT);
+    this.setState({search: !this.state.search, query: undefined});
   }
 
-  async onLogout() {
-    try {
-      await AsyncStorage.removeItem(key);
-      ToastAndroid.show('Logout successfully!', ToastAndroid.SHORT);
-    } catch (error) {
-      ToastAndroid.show(String(error).replace('Error: ',''), ToastAndroid.SHORT);
-    }
+  onRefresh() {
+    this.props.onRefresh && this.props.onRefresh();
+  }
+
+  onLogout() {
+    this.props.onLogout && this.props.onLogout();
   }
 }
 
 const icons = {
-  back: require('./ic_menu_back.png'),
-  logo: require('./ic_menu_logo.png'),
-  menu: require('./ic_menu_option.png'),
+     more: require('./icons/ic_action_more.png'),
+   search: require('./icons/ic_action_search.png'),
+  refresh: require('./icons/ic_action_refresh.png'),
 };
 
 const actions = [
-  {title: 'Register', route: 'register'},
-  {title: 'Login', route: 'login'},
-  {title: 'Forget Password', route: 'forget'},
-  {title: 'Reset Password', route: 'reset'},
-  {title: 'Restricted Page', route: 'restricted'},
+  {title: 'Search', icon: icons.search, show: 'always'},
+  {title: 'Refresh', icon: icons.refresh, show: 'ifRoom'},
+  {title: 'Single Sign On'},
+  {title: 'Notifications'},
   {title: 'Profile', auth: true},
   {title: 'Logout', auth: true},
 ];
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'stretch',
+  },
+  toolbar: {
+    height: 60,
+    backgroundColor: '#00796B'
+  },
+  titleContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
+    alignItems: 'center',
+  },
+  title: {
+    alignSelf: 'flex-start',
+    backgroundColor: 'transparent',
+    fontSize: 20,
+    color: '#ffffff'
+  }
+});

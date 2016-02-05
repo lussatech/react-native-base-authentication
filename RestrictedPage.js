@@ -6,7 +6,8 @@ import React, {
   Text,
   AsyncStorage,
   ToastAndroid,
-  ScrollView
+  ScrollView,
+  ProgressBarAndroid
 } from 'react-native';
 
 import Login from './Login';
@@ -25,7 +26,7 @@ export default class extends Component {
   }
 
   componentWillMount() {
-    this.loadSession().done();
+    this.loadSession().done(() => this.setState({loading: false}));
   }
 
   async loadSession() {
@@ -35,8 +36,6 @@ export default class extends Component {
       if (value !== null) this.setState({session: JSON.parse(value)});
     } catch (error) {
       ToastAndroid.show(String(error).replace('Error: ',''), ToastAndroid.LONG);
-    } finally {
-      this.setState({loading: false});
     }
   }
 
@@ -50,16 +49,14 @@ export default class extends Component {
   renderScene() {
     return (
       <ScrollView>
-        <Navbar title={'Restricted Page'} navigator={this.props.navigator} />
+        <Navbar
+          title={'Restricted Page'}
+          navigator={this.props.navigator}
+          onLogout={() => this.onLogout().done(() => this.setState({session: undefined}))}
+        />
         <View>
-          <Text style={styles.welcome}>
-            Welcome to Restricted Page!
-          </Text>
           <Text style={styles.instructions}>
-            If you can see this page,
-          </Text>
-          <Text style={styles.instructions}>
-            Its means that you already logged in.
+            {JSON.stringify(this.state.session)}
           </Text>
         </View>
       </ScrollView>
@@ -67,16 +64,19 @@ export default class extends Component {
   }
 
   renderLogin() {
-    return <Login />;
+    return <Login navigator={this.props.navigator} />;
   }
 
   renderLoading() {
-    return (
-      <View>
-        <Text style={styles.instructions}>
-          please wait . . .
-        </Text>
-      </View>
-    );
+    return <ProgressBarAndroid />;
+  }
+
+  async onLogout() {
+    try {
+      await AsyncStorage.removeItem(key);
+      ToastAndroid.show('Logout successfully!', ToastAndroid.SHORT);
+    } catch (error) {
+      ToastAndroid.show(String(error).replace('Error: ',''), ToastAndroid.SHORT);
+    }
   }
 }

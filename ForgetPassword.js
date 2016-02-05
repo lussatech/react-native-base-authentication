@@ -4,6 +4,7 @@ import React, {
   Component,
   ScrollView,
   Text,
+  TouchableOpacity,
   TouchableHighlight,
   View,
   TextInput,
@@ -28,15 +29,20 @@ export default class extends Component {
 
   render() {
     let fields = [
-      {ref: 'phone', placeholder: 'Phone Number', keyboardType: 'numeric', secureTextEntry: false},
+      {ref: 'phone', placeholder: 'Phone Number', keyboardType: 'numeric', secureTextEntry: false, style: [styles.inputText]},
     ];
 
     return(
       <ScrollView ref={'forgetForm'} {...this.props}>
-        <Text style={styles.title}>FORGET PASSWORD</Text>
-        <View key={'phone'}>
+        <TouchableOpacity activeOpacity={1} style={styles.titleContainer}>
+          <Text style={styles.title}>{'FORGET PASSWORD'}</Text>
+        </TouchableOpacity>
+        <View key={'phone'} style={styles.inputContainer}>
           <TextInput {...fields[0]} onFocus={() => this.onFocus({...fields[0]})} onChangeText={(text) => this.state.data.phone = text} />
         </View>
+        <TouchableOpacity activeOpacity={0.7} style={{alignSelf:'flex-end',margin:8}} onPress={() => this.gotoRoute('reset')}>
+          <Text style={{fontSize:17,color:'#2196F3'}}>{'Reset password?'}</Text>
+        </TouchableOpacity>
         <TouchableHighlight style={this.state.loading ? styles.buttonDisabled : styles.button} underlayColor={'#2bbbad'} onPress={() => this.onSubmit(fields)}>
           <Text style={styles.buttonText}>{this.state.loading ? 'Please Wait . . .' : 'Submit'}</Text>
         </TouchableHighlight>
@@ -85,5 +91,23 @@ export default class extends Component {
       .done(() => {
         this.setState({loading: false});
       });
+  }
+
+  goBack() {
+    if (this.props.navigator) {
+      this.props.navigator.pop();
+    }
+  }
+
+  gotoRoute(name) {
+    if (this.props.navigator && this.props.navigator.getCurrentRoutes()[this.props.navigator.getCurrentRoutes().length-1].name != name) {
+      this.props.navigator.push({name: name});
+    }
+  }
+
+  replaceRoute(name) {
+    if (this.props.navigator && this.props.navigator.getCurrentRoutes()[this.props.navigator.getCurrentRoutes().length-1].name != name) {
+      this.props.navigator.replace({name: name});
+    }
   }
 }
