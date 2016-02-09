@@ -1,3 +1,5 @@
+![react-native-base-authentication](https://raw.githubusercontent.com/lussatech/react-native-base-authentication/master/preview.gif)
+
 ### Installation
     npm i react-native-base-authentication
 
