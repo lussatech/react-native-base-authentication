@@ -13,11 +13,9 @@ function run() {
     console.error('package.json couldn\'t be found, maybe `%s` is not the root of project directory', process.cwd());
     process.exit(1);
   } finally {
-    var react = Object.keys(packages.dependencies).map(function (val) {
-      if (val === 'react-native') return true;
-    });
+    var hasReactNative = packages.dependencies.hasOwnProperty('react-native');
 
-    if (react[0]) {
+    if (hasReactNative) {
       writing(source, target);
     } else {
       console.error('react-native dependencies couldn\'t be found, maybe `%s` is not the root of react-native project directory', process.cwd());
